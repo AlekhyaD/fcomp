@@ -1,6 +1,10 @@
+Python version
 1. Provide a list of the nodes you want to compare in nodes.txt
 2. Run fcomp.py
   >> python fcomp.py
   
+Win32 version
+1. Provide a list of the nodes you want to compare in nodes.txt
+2. Run fcomp.exe
 
 See config.ini file for other usage details
