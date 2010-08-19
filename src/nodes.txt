@@ -1,1 +1,1 @@
-<Replace this messages with the nodes you want to compare>
+<Replace this message with the nodes you want to compare>
