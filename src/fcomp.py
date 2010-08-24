@@ -332,7 +332,7 @@ class FileComparator (object):
         for mod_file, orig_file in changed_files:
             diff_file = os.path.join(self.report_dir, mod_file.replace(":","_").replace("\\","_").replace("/","_").replace(".","_")+".htm")
             if self.__regex_diff(diff_file): 
-                diff_file_html = difflib.HtmlDiff().make_file(open(mod_file,"r").readlines(),open(orig_file,"r").readlines())
+                diff_file_html = difflib.HtmlDiff().make_file(open(orig_file,"r").readlines(),open(mod_file,"r").readlines())
                 diff_file_html_hook = diff_file_html.replace('<meta http-equiv="Content-Type"','',1).replace('content="text/html; charset=ISO-8859-1" />','',1).replace('Courier',"'Courier New', Courier, monospace",1)
                 html_file = open(diff_file, "w")
                 html_file.write(diff_file_html_hook)
