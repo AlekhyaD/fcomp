@@ -28,7 +28,9 @@ class FileComparator (object):
         self.__create_directory(self.repo_path)
         
         bar = ProgressBar(len(self.nodes))
+        
         failed = []
+        
         for src, dest in self.nodes:
             try:               
                 self.__copy_file(src, os.path.join(self.repo_path, dest))
@@ -145,10 +147,8 @@ class FileComparator (object):
         for line in nodes_file:
             if line.strip('\n').strip().strip('\\').strip('/') == '': 
                 continue
-            tmp_nodes.append(line.strip('\n').strip().strip('\\').strip('/'))
-        
-        
-        
+            tmp_nodes.append(line.strip('\n').strip().strip('\\').strip('/'))        
+                
         nodes = []
         for node in tmp_nodes:
             if os.path.isfile(node):
@@ -162,8 +162,7 @@ class FileComparator (object):
             else:
                 print "\n>> File or directory '" + node + "' doesn't exist.\n"
                 while True:
-                    command = raw_input("(I)gnore, (E)xit: ")
-                    
+                    command = raw_input("(I)gnore, (E)xit: ")                    
                     if command.lower() == "i":
                         break
                     elif command.lower() == "e":
@@ -232,8 +231,8 @@ class FileComparator (object):
                 os.makedirs(dir)
 
             except OSError, IOError:
-                # Windows hook. Windows raises an access denied error if the folder has been opened in Explorer before removal
-                # So need to wait for a while between os.mkdirs attempts until the directory will be released by Explorer 
+                # Windows raises an access denied error if the folder has been opened in Explorer before removal
+                # Need to wait for a while between os.mkdirs attempts until the directory will be released by Explorer 
                 if not os.path.exists(dir):
                     sleep(2)
                     try:
@@ -274,9 +273,13 @@ class FileComparator (object):
                     )
         for mod_file, orig_file, diff_file in changed_files:
             if diff_file != "":
-                report.write("<tr><td><a href='file://"+mod_file +"'> "+ mod_file + " </a></td><td><a href='file://"+orig_file +"'> "+ orig_file + " </a></td><td><a href='file://"+diff_file +"'> View Differences </a></td></tr>\n")
+                report.write("<tr><td><a href='file://"+mod_file +"'> "+ mod_file + \
+                             " </a></td><td><a href='file://"+orig_file +"'> "+ orig_file + \
+                             " </a></td><td><a href='file://"+diff_file +"'> View Differences </a></td></tr>\n")
             else:
-                report.write("<tr><td><a href='file://"+mod_file +"'> "+ mod_file + " </a></td><td><a href='file://"+orig_file +"'> "+ orig_file + " </a></td><td>&nbsp;</td></tr>\n")
+                report.write("<tr><td><a href='file://"+mod_file +"'> "+ mod_file + \
+                             " </a></td><td><a href='file://"+orig_file +"'> "+ orig_file + \
+                             " </a></td><td>&nbsp;</td></tr>\n")
         report.write(
 """            </tbody>
     </table>
@@ -290,7 +293,9 @@ class FileComparator (object):
             <tbody>"""
                     )
         for mod_file, orig_file in removed_files:
-            report.write("<tr><td><a href='file://"+mod_file +"'> "+ mod_file + " </a></td><td><a href='file://"+orig_file +"'> "+ orig_file + " </a></td></tr>\n")
+            report.write("<tr><td><a href='file://"+mod_file +"'> "+ mod_file + \
+                         " </a></td><td><a href='file://"+orig_file +"'> "+ orig_file + \
+                         " </a></td></tr>\n")
         report.write(
 """            </tbody>
     </table>
@@ -333,7 +338,8 @@ class FileComparator (object):
             diff_file = os.path.join(self.report_dir, mod_file.replace(":","_").replace("\\","_").replace("/","_").replace(".","_")+".htm")
             if self.__regex_diff(diff_file): 
                 diff_file_html = difflib.HtmlDiff().make_file(open(orig_file,"r").readlines(),open(mod_file,"r").readlines())
-                diff_file_html_hook = diff_file_html.replace('<meta http-equiv="Content-Type"','',1).replace('content="text/html; charset=ISO-8859-1" />','',1).replace('Courier',"'Courier New', Courier, monospace",1)
+                diff_file_html_hook = diff_file_html.replace('<meta http-equiv="Content-Type"','',1)\
+                    .replace('content="text/html; charset=ISO-8859-1" />','',1).replace('Courier',"'Courier New', Courier, monospace",1)
                 html_file = open(diff_file, "w")
                 html_file.write(diff_file_html_hook)
                 html_file.close()
@@ -347,39 +353,25 @@ class ProgressBar(object):
     def __init__(self, steps, max_width=20):
         """Prepare the visualization."""
         self.max_width = max_width
-        self.spin = cycle(r'-\|/').next
-        
+        self.spin = cycle(r'-\|/').next        
         # Bar template
         self.tpl = '%-' + str(self.max_width) + 's ] %c %3i%%' 
-        if steps !=0: self.__show('[ ')
-        
-        # Current bar length
-        self.last_output_length = 0
-        
-        # Amount of the steps
+        if steps !=0: self.__show('[ ')       
+        self.last_output_length = 0       
         self.steps = steps
-        
-        # Steps counter
         self.count = 0
         
         
     def update (self):
-        """Update the visualization."""
-        
-        self.count = self.count + 1
-        
+        """Update the visualization."""        
+        self.count = self.count + 1        
         # Remove last state.
         self.__show('\b' * self.last_output_length)
-
         # Generate new state.
         width = int(float(self.count)/float(self.steps) * self.max_width)
-        output = self.tpl % ('-' * width, self.spin(), float(self.count)/float(self.steps) * 100.0)
-
-        # Show the new state and store its length.
+        output = self.tpl % ('-' * width, self.spin(), float(self.count)/float(self.steps) * 100.0)        
         self.__show(output)
         self.last_output_length = len(output)
-        
-        # Add EOL when progress bar is full.
         if width == self.max_width: self.__show('\n')
         
     def __show(self, string):
